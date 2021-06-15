@@ -8,9 +8,12 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
+import org.acme.util.TokenUtils;
 import org.approvaltests.Approvals;
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
@@ -24,7 +27,11 @@ import static org.hamcrest.CoreMatchers.is;
 @QuarkusTestResource(CadastroTestLifecycleManager.class)
 public class RestauranteResourceTest {
 
-
+    private String token;
+    @BeforeEach
+    public void gereToken(){
+       token = TokenUtils.generateTokenString("/JWTProprietarioClaims.json", null);
+    }
     @Test
     @DataSet("restaurants-cenario-1.yml")
     public void testBuscarRestaurante() {
@@ -37,7 +44,8 @@ public class RestauranteResourceTest {
     }
 
     private RequestSpecification given(){
-        return RestAssured.given().contentType(ContentType.JSON);
+
+        return RestAssured.given().contentType(ContentType.JSON).header(new Header("Authorization", "Bearer "+ token));
     }
 
 

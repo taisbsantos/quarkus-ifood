@@ -2,6 +2,7 @@ package org.acme;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
@@ -13,12 +14,21 @@ import java.util.Optional;
 import org.acme.dto.AdicionarRestauranteDTO;
 import org.acme.dto.AtualizarRestauranteDTO;
 import org.acme.dto.RestauranteMapper;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Path("/restaurantes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "restaurante")
 
+@RolesAllowed("proprietario")
+@SecurityScheme(securitySchemeName = "ifood-oauth", type = SecuritySchemeType.OAUTH2, flows =
+@OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8080/auth/realms/ifood/protocol/openid-connect/token")))
+@SecurityRequirement(name = "ifood-oauth")
 public class RestauranteResource {
 
     @Inject
